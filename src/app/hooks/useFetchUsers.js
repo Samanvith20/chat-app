@@ -3,17 +3,22 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getAllUsers } from "../utils/firebaseAuth";
 import { useUsersStore } from "../zustand/useUsersStore";
+import { useAuthStore } from "../zustand/useAuthStore";
 
 
 export const useFetchUsers = () => {
   const { updateUsers } = useUsersStore();
   const [loading, setLoading] = useState(true);
+  const{authDetails}=useAuthStore()
+  console.log("authDetails", authDetails.uid);
+  
 
   useEffect(() => {
     const fetchUsers = async () => {
+        if(!authDetails.uid) return
       try {
         setLoading(true);
-        const usersList = await getAllUsers();
+        const usersList = await getAllUsers(authDetails.uid);
         updateUsers(usersList);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -24,7 +29,7 @@ export const useFetchUsers = () => {
     };
 
     fetchUsers();
-  }, [updateUsers]);
+  }, [updateUsers, authDetails.uid]);
 
   return { loading };
 };
