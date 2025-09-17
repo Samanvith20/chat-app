@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { handleSignin } from "../utils/firebaseAuth"
 import { useRouter } from "next/navigation"
+import { useAuthStore } from "../zustand/useAuthStore"
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -15,13 +16,15 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
+  const { updateAuthdetails, } = useAuthStore();
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
   const handlelogin = (e) => {
     e.preventDefault()
     console.log(formData)
-    handleSignin(formData.email, formData.password, router)
+    handleSignin(formData.email, formData.password, router, updateAuthdetails)
   }
 
   return (

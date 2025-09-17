@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 export const useAuthStore = create((set) => ({
-    authName: '',
-    updateAuthName: (name) => set({authName: name})
+    authDetails: '',
+    updateAuthdetails: (details) => set({authDetails: details}), updateAuthName: (name) => set({authName: name})
  }))
  

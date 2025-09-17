@@ -9,11 +9,15 @@ import { auth, db } from "./firebase"; // Make sure to export db from your fireb
 import toast from "react-hot-toast";
 import { firebaseErrorToFriendly } from "./constants";
 
+
+
+ 
 export const handleSignup = async (
   email,
   password,
   name,
-  router
+  router,
+  
 ) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -34,6 +38,8 @@ export const handleSignup = async (
       isActive: true
     });
 
+ 
+
     toast.success("Account created — redirecting…");
     router.push("/login");
   } catch (error) {
@@ -43,11 +49,13 @@ export const handleSignup = async (
   }
 };
 
-export const handleSignin = async (email, password, router) => {
+
+export const handleSignin = async (email, password, router,updateAuthdetails) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     toast.success("Signed in — redirecting…");
     router.push("/chat");
+    updateAuthdetails(userCredential.user);
   } catch (error) {
     console.log("Firebase signin error (full):", error);
     const message = error?.customData?.message || error?.message || error?.code || "Sign in failed";
@@ -56,14 +64,14 @@ export const handleSignin = async (email, password, router) => {
 };
 
 // Function to get all users from Firestore
-export const getAllUsers = async () => {
+export const getAllUsers = async (currentUid) => {
+  console.log("currentUid", currentUid);
   try {
     const usersCollection = collection(db, "users");
     const usersSnapshot = await getDocs(usersCollection);
-    const usersList = usersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+   const usersList = usersSnapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .filter(u => u.uid !== currentUid); // exclude current user
     return usersList;
   } catch (error) {
     console.error("Error fetching users:", error);
