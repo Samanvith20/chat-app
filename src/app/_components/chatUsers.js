@@ -5,10 +5,10 @@ import { useChatReceiverStore } from '../zustand/useChatReceiverStore';
 import { useChatMsgsStore } from '../zustand/useChatMsgsStore';
 import toast from 'react-hot-toast';
 
-const ChatUsers = () => {
+const ChatUsers = ({ onlineList = [] }) => {
   const { users } = useUsersStore();
   const { authDetails } = useAuthStore();
-  let authName=authDetails?.displayName
+  const authName = authDetails?.displayName;
   const { chatReceiver, updateChatReceiver } = useChatReceiverStore();
   const { updateChatMsgs } = useChatMsgsStore();
 
@@ -30,8 +30,6 @@ const ChatUsers = () => {
       return;
     }
 
-  
-
     const getMsgs = async () => {
       try {
         const params = new URLSearchParams({
@@ -43,7 +41,6 @@ const ChatUsers = () => {
 
         const res = await fetch(url, {
           method: 'GET',
-          
           headers: {
             'Accept': 'application/json',
           },
@@ -55,39 +52,70 @@ const ChatUsers = () => {
           updateChatMsgs([]);
           return;
         }
-        console.log("res", res);
 
         const data = await res.json();
-         console.log("data", data);
-
         if (Array.isArray(data) && data.length !== 0) {
           updateChatMsgs(data);
         } else {
           updateChatMsgs([]);
         }
       } catch (err) {
-       
         console.log('Error fetching messages', err);
         updateChatMsgs([]);
       }
     };
 
     getMsgs();
-
-   
   }, [chatReceiver, authName, updateChatMsgs]);
 
+  // helper: determine online boolean from onlineList (case-sensitive match on displayName)
+  const isOnline = (displayName) => {
+    if (!Array.isArray(onlineList)) return false;
+    return onlineList.includes(displayName);
+  };
+
   return (
-    <div>
-      {users?.map((user, index) => (
-        <div
-          key={user.id ?? user.displayName ?? index}
-          onClick={() => setChatReceiver(user)}
-          className="bg-blue-300 rounded-xl m-3 p-5 cursor-pointer"
-        >
-          {user.displayName}
-        </div>
-      ))}
+    <div className="space-y-2">
+      {users?.map((user, index) => {
+        const name = user.displayName ?? `User ${index + 1}`;
+        const online = isOnline(name);
+        const selected = chatReceiver === name;
+
+        return (
+          <button
+            key={user.id ?? name}
+            onClick={() => setChatReceiver(user)}
+            className={`w-full text-left flex items-center gap-3 p-3 rounded-xl transition-shadow
+              ${selected ? 'ring-2 ring-blue-300 bg-blue-50' : 'bg-white hover:shadow-sm'}
+            `}
+            aria-pressed={selected}
+          >
+            {/* Avatar */}
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-400 text-white font-semibold">
+              {name.charAt(0).toUpperCase()}
+            </div>
+
+            {/* Name and status */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <div className="truncate font-medium text-sm">{name}</div>
+                {/* Online indicator dot */}
+                <div className="flex items-center gap-2">
+                  <span
+                    aria-hidden
+                    className={`inline-block h-2.5 w-2.5 rounded-full ${online ? 'bg-green-500' : 'bg-gray-300'}`}
+                    title={online ? 'Online' : 'Offline'}
+                  />
+                </div>
+              </div>
+
+              <div className="text-xs text-gray-500 truncate">
+                {name === authName ? 'You' : online ? 'Active now' : 'Offline'}
+              </div>
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 };
