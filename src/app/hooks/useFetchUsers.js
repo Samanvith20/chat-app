@@ -6,16 +6,21 @@ import { useUsersStore } from "../zustand/useUsersStore";
 import { useAuthStore } from "../zustand/useAuthStore";
 
 
+
 export const useFetchUsers = () => {
   const { updateUsers } = useUsersStore();
   const [loading, setLoading] = useState(true);
   const{authDetails}=useAuthStore()
-  console.log("authDetails", authDetails.uid);
-  
+  console.log("authDetails", authDetails?.uid);
+ 
 
   useEffect(() => {
     const fetchUsers = async () => {
-        if(!authDetails.uid) return
+        if(!authDetails?.uid) {
+          
+           setLoading(false);
+          return
+        }
       try {
         setLoading(true);
         const usersList = await getAllUsers(authDetails.uid);
@@ -29,7 +34,7 @@ export const useFetchUsers = () => {
     };
 
     fetchUsers();
-  }, [updateUsers, authDetails.uid]);
+  }, [updateUsers, authDetails?.uid]);
 
   return { loading };
 };
