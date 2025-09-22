@@ -54,7 +54,7 @@ export const handleSignin = async (email, password, router,updateAuthdetails) =>
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     toast.success("Signed in — redirecting…");
-    router.push("/chat");
+    router.push("/");
     updateAuthdetails(userCredential.user);
   } catch (error) {
     console.log("Firebase signin error (full):", error);

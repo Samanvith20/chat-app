@@ -8,8 +8,10 @@ import { auth } from "../utils/firebase";
 
 
 
+
 export default function AuthProvider({ children }) {
   const{updateAuthdetails}=useAuthStore()
+  
 
   useEffect(() => {
     // subscribe to firebase auth state
@@ -19,7 +21,9 @@ export default function AuthProvider({ children }) {
         updateAuthdetails(user);
       } else {
         // user is signed out
+      
         updateAuthdetails(null,);
+
       }
     
     });

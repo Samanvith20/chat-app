@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { handleSignup } from "../utils/firebaseAuth";
 import toast, { Toaster } from "react-hot-toast";
+import Image from "next/image";
 
 
 export default function Signup() {
@@ -51,11 +52,14 @@ export default function Signup() {
       <Toaster />
       <div className="hidden md:flex md:flex-1 bg-neutral-900 items-center justify-center p-8">
         <div className="w-full h-full max-h-[600px] bg-neutral-800 border border-neutral-700 rounded-2xl overflow-hidden">
-          <img
-            src="https://images.pexels.com/photos/879109/pexels-photo-879109.jpeg"
-            alt="Professional workspace"
-            className="w-full h-full  bg-[red] object-cover"
-          />
+          <Image
+  src="https://ca.pinterest.com/pin/20125529572714593/"
+  alt="Abstract gradient background"
+  className="w-full h-full object-cover"
+  height={600}
+  width={600}
+  
+/>
         </div>
       </div>
 
